@@ -1,0 +1,136 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="book-list-container">
+    <h1 class="page-title">Library Collection</h1>
+
+    {% if book_list %}
+    <div class="book-grid">
+        {% for book in book_list %}
+        <div class="book-card">
+            <div class="book-icon"></div>
+            <div class="book-details">
+                <h2 class="book-title">
+                    <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                </h2>
+                <p class="book-author">by {{ book.author }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon"></div>
+        <p>There are no books in the library.</p>
+        <p class="empty-subtitle">Check back later for new additions!</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .book-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    .book-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .book-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-icon {
+        font-size: 2rem;
+        color: #3498db;
+    }
+
+    .book-details {
+        flex: 1;
+    }
+
+    .book-title {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+
+    .book-title a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .book-title a:hover {
+        color: #3498db;
+    }
+
+    .book-author {
+        margin: 0.5rem 0 0;
+        color: #666;
+        font-size: 0.9rem;
+        font-style: italic;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-top: 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+    }
+
+    .empty-subtitle {
+        color: #666 !important;
+        font-size: 1rem !important;
+        margin-top: 0.5rem !important;
+    }
+
+    @media (max-width: 768px) {
+        .book-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}

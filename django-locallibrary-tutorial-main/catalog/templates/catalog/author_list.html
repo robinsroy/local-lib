@@ -1,0 +1,169 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="author-list-container">
+    <h1 class="page-title">Featured Authors</h1>
+
+    {% if author_list %}
+    <div class="author-grid">
+        {% for author in author_list %}
+        <div class="author-card">
+            <div class="author-avatar">
+                <span class="avatar-placeholder">✍️</span>
+            </div>
+            <div class="author-info">
+                <h2 class="author-name">
+                    <a href="{{ author.get_absolute_url }}">{{ author }}</a>
+                </h2>
+                <p class="author-dates">
+                    {% if author.date_of_birth %}
+                        <span class="date">{{ author.date_of_birth|date:"Y" }}</span>
+                    {% endif %}
+                    -
+                    {% if author.date_of_death %}
+                        <span class="date">{{ author.date_of_death|date:"Y" }}</span>
+                    {% else %}
+                        <span class="present">Present</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">✍️</div>
+        <p class="empty-message">There are no authors available.</p>
+        <p class="empty-subtitle">Check back soon for updates to our author collection.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .author-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .author-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem 0;
+    }
+
+    .author-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .author-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        background: #f0f2f5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .avatar-placeholder {
+        font-size: 1.8rem;
+    }
+
+    .author-info {
+        flex: 1;
+    }
+
+    .author-name {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+
+    .author-name a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .author-name a:hover {
+        color: #3498db;
+    }
+
+    .author-dates {
+        margin: 0.5rem 0 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .date {
+        color: #666;
+    }
+
+    .present {
+        color: #27ae60;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-top: 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-message {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.2rem;
+    }
+
+    .empty-subtitle {
+        color: #666;
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .author-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .author-card {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}

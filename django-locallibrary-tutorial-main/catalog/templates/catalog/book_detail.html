@@ -1,0 +1,317 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="book-detail-container">
+    <div class="book-header">
+        <h1 class="book-title">{{ book.title }}</h1>
+        <div class="book-meta">
+            <a href="{{ book.author.get_absolute_url }}" class="author-link">
+                <span class="meta-label">By</span> {{ book.author }}
+            </a>
+        </div>
+    </div>
+
+    <div class="book-info-grid">
+        <div class="info-card">
+            <h3 class="card-title">Summary</h3>
+            <p class="summary-text">{{ book.summary }}</p>
+        </div>
+
+        <div class="info-card details-card">
+            <h3 class="card-title">Book Details</h3>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">ISBN</span>
+                    <span class="detail-value">{{ book.isbn }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Language</span>
+                    <span class="detail-value">{{ book.language }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Genre</span>
+                    <span class="detail-value">{{ book.genre.all|join:", " }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copies-section">
+        <h2 class="section-title">Available Copies</h2>
+        
+        {% if book.bookinstance_set.all %}
+        <div class="copies-grid">
+            {% for copy in book.bookinstance_set.all %}
+            <div class="copy-card">
+                <div class="status-badge {% if copy.status == 'a' %}status-available{% elif copy.status == 'd' %}status-danger{% else %}status-warning{% endif %}">
+                    {{ copy.get_status_display }}
+                </div>
+                
+                <div class="copy-details">
+                    {% if copy.status != 'a' %}
+                    <div class="copy-detail">
+                        <span class="detail-label">Due Date:</span>
+                        <span class="detail-value">{{copy.due_back}}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="copy-detail">
+                        <span class="detail-label">Imprint:</span>
+                        <span class="detail-value">{{copy.imprint}}</span>
+                    </div>
+                    
+                    <div class="copy-detail">
+                        <span class="detail-label">ID:</span>
+                        <a href="{{ copy.get_absolute_url }}" class="copy-id">{{copy.id}}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">📚</span>
+            <p>The library has no copies of this book.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block sidebar %}
+{{ block.super }}
+
+{% if perms.catalog.change_book or perms.catalog.delete_book %}
+<div class="admin-actions">
+    <h3 class="admin-title">Admin Actions</h3>
+    <div class="action-buttons">
+        {% if perms.catalog.change_book %}
+        <a href="{% url 'book-update' book.id %}" class="action-button edit-button">
+            Update Book
+        </a>
+        {% endif %}
+        {% if not book.bookinstance_set.all and perms.catalog.delete_book %}
+        <a href="{% url 'book-delete' book.id %}" class="action-button delete-button">
+            Delete Book
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<style>
+    .book-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .book-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .book-title {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin: 0 0 1rem;
+    }
+
+    .book-meta {
+        font-size: 1.2rem;
+    }
+
+    .author-link {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .author-link:hover {
+        color: #2980b9;
+    }
+
+    .meta-label {
+        color: #666;
+    }
+
+    .book-info-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        margin: 0 0 1rem;
+        font-size: 1.25rem;
+    }
+
+    .summary-text {
+        line-height: 1.6;
+        color: #444;
+        margin: 0;
+    }
+
+    .details-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .detail-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .detail-value {
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .copies-section {
+        margin-top: 3rem;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+    .copies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .copy-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .status-available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .copy-details {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .copy-detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .copy-id {
+        color: #3498db;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .admin-actions {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .admin-title {
+        color: #2c3e50;
+        margin: 0 0 1rem;
+        font-size: 1.1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .action-button {
+        display: block;
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 500;
+        transition: opacity 0.2s;
+    }
+
+    .action-button:hover {
+        opacity: 0.9;
+    }
+
+    .edit-button {
+        background: #3498db;
+        color: white;
+    }
+
+    .delete-button {
+        background: #e74c3c;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .book-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .book-title {
+            font-size: 2rem;
+        }
+
+        .copies-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
